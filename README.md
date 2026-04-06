@@ -98,7 +98,7 @@ MySQL Database
 ## ⚙️ Setup Instructions
 
 ```bash
-git clone <repo-link>
+git clone https://github.com/TheBugHunter-HimanshuBagga/concurrency-safe-event-ticketing-system.git
 cd event-ticketing-system
 ```
 
