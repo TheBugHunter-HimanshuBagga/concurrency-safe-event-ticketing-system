@@ -1,11 +1,13 @@
 package com.himanshu.event_ticketing_system.service;
 
+import com.himanshu.event_ticketing_system.config.SecurityConfig;
 import com.himanshu.event_ticketing_system.dto.RegisterRequest;
 import com.himanshu.event_ticketing_system.dto.UserResponse;
 import com.himanshu.event_ticketing_system.entity.User;
 import com.himanshu.event_ticketing_system.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,6 +16,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+    private final PasswordEncoder passwordEncoder;
 
     public UserResponse registerUser(RegisterRequest request){
         if(userRepository.findByEmail(request.getEmail()).isPresent()){
@@ -35,6 +38,7 @@ public class UserService {
 //        );
 
         User user = modelMapper.map(request , User.class);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         User savedUser = userRepository.save(user);
         return modelMapper.map(savedUser , UserResponse.class);
 
