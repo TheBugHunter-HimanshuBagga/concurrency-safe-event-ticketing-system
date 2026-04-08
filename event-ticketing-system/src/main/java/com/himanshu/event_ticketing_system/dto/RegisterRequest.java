@@ -4,15 +4,24 @@ import com.himanshu.event_ticketing_system.entity.enums.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.*;
+import org.springframework.stereotype.Service;
 
-public record RegisterRequest(
-        @NotNull
-        String name,
-        @NotBlank
-        @Email
-        String email,
-        @NotBlank
-        String password,
-        Role role
-) {
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class RegisterRequest {
+
+    @NotBlank
+    private String name;
+
+    @NotBlank
+    @Email
+    private String email;
+
+    @NotBlank
+    private String password;
+
+    private Role role;
 }

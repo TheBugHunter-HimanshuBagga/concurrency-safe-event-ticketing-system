@@ -8,8 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
-
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -18,7 +16,7 @@ public class UserService {
     private final ModelMapper modelMapper;
 
     public UserResponse registerUser(RegisterRequest request){
-        if(userRepository.findByEmail(request.email()).isPresent()){
+        if(userRepository.findByEmail(request.getEmail()).isPresent()){
             throw new RuntimeException("User with this email already exists");
         }
         // if not present then create new user
@@ -39,6 +37,18 @@ public class UserService {
         User user = modelMapper.map(request , User.class);
         User savedUser = userRepository.save(user);
         return modelMapper.map(savedUser , UserResponse.class);
+
+        /* OUTPUT
+           {
+            "timestamp": "06:23:46 08-04-2026",
+            "data": {
+                        "id": 2,
+                        "name": "Himanshu",
+                        "email": "test@gmail.com"
+             },
+            "error": null
+        }
+         */
 
     }
 

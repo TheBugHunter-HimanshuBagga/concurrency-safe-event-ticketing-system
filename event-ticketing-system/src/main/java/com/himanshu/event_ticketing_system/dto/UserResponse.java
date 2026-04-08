@@ -1,8 +1,13 @@
 package com.himanshu.event_ticketing_system.dto;
 
-public record UserResponse(
-        Long id,
-        String name,
-        String email
-) {
+import lombok.*;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserResponse{
+        private Long id;
+        private String name;
+        private String email;
 }
