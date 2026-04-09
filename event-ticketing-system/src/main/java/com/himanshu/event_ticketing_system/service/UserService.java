@@ -1,6 +1,7 @@
 package com.himanshu.event_ticketing_system.service;
 
 import com.himanshu.event_ticketing_system.config.SecurityConfig;
+import com.himanshu.event_ticketing_system.dto.LoginRequest;
 import com.himanshu.event_ticketing_system.dto.RegisterRequest;
 import com.himanshu.event_ticketing_system.dto.UserResponse;
 import com.himanshu.event_ticketing_system.entity.User;
@@ -18,8 +19,8 @@ public class UserService {
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
 
-    public UserResponse registerUser(RegisterRequest request){
-        if(userRepository.findByEmail(request.getEmail()).isPresent()){
+    public UserResponse registerUser(RegisterRequest request) {
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new RuntimeException("User with this email already exists");
         }
         // if not present then create new user
@@ -37,10 +38,10 @@ public class UserService {
 //                savedUser.getEmail()
 //        );
 
-        User user = modelMapper.map(request , User.class);
+        User user = modelMapper.map(request, User.class);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         User savedUser = userRepository.save(user);
-        return modelMapper.map(savedUser , UserResponse.class);
+        return modelMapper.map(savedUser, UserResponse.class);
 
         /* OUTPUT
            {
