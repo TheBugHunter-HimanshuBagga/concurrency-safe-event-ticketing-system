@@ -1,5 +1,7 @@
 package com.himanshu.event_ticketing_system.controller;
 
+import com.himanshu.event_ticketing_system.dto.LoginRequest;
+import com.himanshu.event_ticketing_system.dto.LoginResponse;
 import com.himanshu.event_ticketing_system.dto.RegisterRequest;
 import com.himanshu.event_ticketing_system.dto.UserResponse;
 import com.himanshu.event_ticketing_system.entity.User;
@@ -26,6 +28,13 @@ public class AuthController {
         UserResponse userResponse = userService.registerUser(registerRequest);
         ApiResponse<UserResponse> apiResponse = new ApiResponse<>(userResponse);
         return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse<LoginResponse>> loginUser(@RequestBody @Valid LoginRequest loginRequest){
+        LoginResponse loginResponse = userService.loginUser(loginRequest);
+        ApiResponse<LoginResponse> apiResponse = new ApiResponse<>(loginResponse);
+        return ResponseEntity.ok(apiResponse);
     }
 
 }

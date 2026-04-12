@@ -26,11 +26,11 @@ public class JwtUtil {
 
     public String generateAccessToken(String email) {
         return Jwts.builder()
-                .setSubject(email)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 15))
-                .signWith(key)
-                .compact();
+                .setSubject(email) // stores users identity , here - email
+                .setIssuedAt(new Date()) // time of token which is issues at
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 15)) // valid unitl
+                .signWith(key) //Signs token → prevents tampering
+                .compact(); // header + payload + signature
     }
 
     public String generateRefreshToken(String email) {
@@ -43,7 +43,7 @@ public class JwtUtil {
     }
 
     public String extractEmail(String token) {
-        return extractAllClaims(token).getSubject();
+        return extractAllClaims(token).getSubject(); // Reads email stored in token
     }
 
     public boolean isTokenValid(String token, String email) {
@@ -61,3 +61,20 @@ public class JwtUtil {
                 .getBody();
     }
 }
+/*
+    what's the code doin
+
+1. Generate tokens (access + refresh)
+2. Read data from token (email)
+3. Validate token (correct + not expired)
+
+    jwt.securityKey=mysecretkeymysecretkeymysecretkey123
+
+    String → byte[] → SecretKey
+👉 Why?
+JWT needs cryptographic key, not string
+This key is used to sign tokens
+
+
+
+ */
