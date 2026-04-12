@@ -5,3 +5,12 @@ public class UserNotFoundException extends RuntimeException{
         super("User Not Found");
     }
 }
+/*
+Service throws UserNotFoundException
+↓
+Spring checks handlers
+↓
+Finds RuntimeException handler / Specific exception  Handler (NEW)
+↓
+Uses that handler
+ */

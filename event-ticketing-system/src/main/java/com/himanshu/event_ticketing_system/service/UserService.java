@@ -6,6 +6,8 @@ import com.himanshu.event_ticketing_system.dto.LoginResponse;
 import com.himanshu.event_ticketing_system.dto.RegisterRequest;
 import com.himanshu.event_ticketing_system.dto.UserResponse;
 import com.himanshu.event_ticketing_system.entity.User;
+import com.himanshu.event_ticketing_system.exception.InvalidCredentialsException;
+import com.himanshu.event_ticketing_system.exception.UserNotFoundException;
 import com.himanshu.event_ticketing_system.repository.UserRepository;
 import com.himanshu.event_ticketing_system.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -62,10 +64,10 @@ public class UserService {
 
     public LoginResponse loginUser(LoginRequest request){
         User user = userRepository.findByEmail(request.getEmail()).orElseThrow(
-                () -> new RuntimeException("User Not Found")
+                UserNotFoundException::new // () -> new UserNotFoundException()
         );
         if(!passwordEncoder.matches(request.getPassword(), user.getPassword())){
-            throw new RuntimeException("Invalid Password");
+            throw new InvalidCredentialsException();
         }
         String accessToken = jwtUtil.generateAccessToken(user.getEmail());
         String refreshToken = jwtUtil.generateRefreshToken(user.getEmail());
