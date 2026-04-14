@@ -76,5 +76,14 @@ JWT needs cryptographic key, not string
 This key is used to sign tokens
 
 
+🧩 Step 1: JWT Utility
 
+✔️ You wrote methods:
+
+generateAccessToken()
+generateRefreshToken()
+extractEmail()
+isTokenValid()
+
+👉 This is your token engine (no Spring Security here)
  */

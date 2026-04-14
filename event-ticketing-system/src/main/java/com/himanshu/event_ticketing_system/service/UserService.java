@@ -75,3 +75,18 @@ public class UserService {
     }
 
 }
+/*
+🧩 Step 2: Login API (UserService)
+
+When user logs in:
+
+User enters email + password
+        ↓
+Validate from DB
+        ↓
+Generate JWT (access + refresh)
+        ↓
+Send tokens to client
+
+👉 After this, JWT becomes the identity proof
+ */
