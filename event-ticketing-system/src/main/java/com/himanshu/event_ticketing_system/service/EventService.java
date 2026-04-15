@@ -41,6 +41,31 @@ public class EventService {
         ); // since its optional we will add the exception case
         return modelMapper.map(event , EventResponse.class);
     }
+
+    // update Event
+    public EventResponse updateEvent(Long id , EventRequest eventRequest){
+        Event event = eventRepository.findById(id).orElseThrow(
+                () -> new RuntimeException("Event Not Found!")
+        );
+        event.setTitle(eventRequest.getTitle());
+        event.setDescription(event.getDescription());
+        event.setEventDateTime(eventRequest.getEventDateTime());
+
+        int seatsDifference = eventRequest.getTotalSeats() - event.getAvailableSeats();
+        event.setTotalSeats(eventRequest.getTotalSeats());
+        event.setAvailableSeats(event.getAvailableSeats() + seatsDifference);
+
+        Event updatedEvent = eventRepository.save(event);
+        return modelMapper.map(updatedEvent , EventResponse.class);
+    }
+
+    // Delete Event
+    public void deleteEvent(Long id){
+        Event event = eventRepository.findById(id).orElseThrow(
+                () -> new RuntimeException("Event Not Found!")
+        );
+        eventRepository.delete(event);
+    }
 }
 /*
 🤷‍♂️CREATE EVENT

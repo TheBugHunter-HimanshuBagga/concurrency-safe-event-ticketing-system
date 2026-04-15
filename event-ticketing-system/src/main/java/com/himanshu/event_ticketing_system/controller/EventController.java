@@ -38,4 +38,18 @@ public class EventController {
         ApiResponse<EventResponse> apiResponse = new ApiResponse<>(eventResponse);
         return ResponseEntity.ok(apiResponse);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<EventResponse>> updateEvent(@PathVariable Long id , @RequestBody EventRequest eventRequest){
+        EventResponse eventResponse = eventService.updateEvent(id , eventRequest);
+        ApiResponse<EventResponse> apiResponse = new ApiResponse<>(eventResponse);
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<String>> deleteEvent(@PathVariable Long id){
+        eventService.deleteEvent(id);
+        ApiResponse<String> apiResponse = new ApiResponse<>("Event Deleted Successfully");
+        return ResponseEntity.ok(apiResponse);
+    }
 }
