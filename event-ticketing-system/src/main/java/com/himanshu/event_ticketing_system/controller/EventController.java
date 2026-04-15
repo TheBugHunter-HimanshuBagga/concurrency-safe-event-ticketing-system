@@ -31,4 +31,11 @@ public class EventController {
         ApiResponse<List<EventResponse>> apiResponse = new ApiResponse<>(eventResponse);
         return ResponseEntity.ok(apiResponse);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<EventResponse>> getEventById(@PathVariable Long id){
+        EventResponse eventResponse = eventService.getEventById(id);
+        ApiResponse<EventResponse> apiResponse = new ApiResponse<>(eventResponse);
+        return ResponseEntity.ok(apiResponse);
+    }
 }
