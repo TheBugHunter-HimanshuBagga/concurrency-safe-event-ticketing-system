@@ -4,6 +4,7 @@ import com.himanshu.event_ticketing_system.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -32,6 +33,15 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
+                        // ADMIN only
+                        .requestMatchers(HttpMethod.POST,"/events/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/events/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE,"/events/**").hasRole("ADMIN")
+                        // USER + ADMIN
+                        .requestMatchers(HttpMethod.GET,"/events/**").authenticated()
+                        // bookings → any logged-in user
+                        .requestMatchers("/bookings/**").authenticated()
+                        // fallback
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session ->

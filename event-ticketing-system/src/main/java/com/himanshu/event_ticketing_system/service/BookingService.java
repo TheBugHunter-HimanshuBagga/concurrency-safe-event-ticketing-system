@@ -51,11 +51,11 @@ public class BookingService {
         Booking booking = new Booking();
         booking.setUser(user);
         booking.setEvent(event);
-        booking.setSeatsBooked(booking.getSeatsBooked());
+        booking.setSeatsBooked(bookingRequest.getSeats());
         booking.setBookingTime(LocalDateTime.now());
 
-        Booking savedUser = bookingRepository.save(booking);
-        return modelMapper.map(savedUser , BookingRequest.class);
+        Booking savedBooking = bookingRepository.save(booking);
+        return modelMapper.map(savedBooking , BookingResponse.class);
     }
 
 }
