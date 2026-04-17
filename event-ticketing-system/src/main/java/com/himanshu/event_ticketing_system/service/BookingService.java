@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 
 import java.awt.print.Book;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -56,6 +58,22 @@ public class BookingService {
 
         Booking savedBooking = bookingRepository.save(booking);
         return modelMapper.map(savedBooking , BookingResponse.class);
+    }
+
+    // get Users Bookings
+    public List<BookingResponse> getMyBookings(){
+        // to see his booking user should be loggedIn
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        User user = userRepository.findByEmail(email).orElseThrow(
+                () -> new RuntimeException("User Not Found")
+        );
+
+        List<Booking> bookings = bookingRepository.findByUser(user);
+        return bookings.stream()
+                .map(b -> modelMapper.map(b , BookingResponse.class))
+                .toList();
+
     }
 
 }
