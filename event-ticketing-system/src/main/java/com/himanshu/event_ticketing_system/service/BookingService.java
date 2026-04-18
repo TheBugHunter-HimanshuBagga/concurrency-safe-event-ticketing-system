@@ -9,6 +9,7 @@ import com.himanshu.event_ticketing_system.entity.User;
 import com.himanshu.event_ticketing_system.repository.BookingRepository;
 import com.himanshu.event_ticketing_system.repository.EventRepository;
 import com.himanshu.event_ticketing_system.repository.UserRepository;
+import jakarta.persistence.OptimisticLockException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -28,10 +29,27 @@ public class BookingService {
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
     private final EventRepository eventRepository;
+
+
+    public BookingResponse bookTickets(BookingRequest bookingRequest){
+        int attempts = 0;
+        while(true){
+            try{
+                return processBooking(bookingRequest);
+            }catch(OptimisticLockException optimisticLockException){
+                attempts++;
+                if(attempts > 2){
+                    throw optimisticLockException;
+                }
+            }
+        }
+    }
+
+
+
     // bookTickets
     @Transactional
-    public BookingResponse bookTickets(BookingRequest bookingRequest){
-
+    public BookingResponse processBooking(BookingRequest bookingRequest){
         // get logged-In
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByEmail(email).orElseThrow(
@@ -57,7 +75,7 @@ public class BookingService {
         booking.setBookingTime(LocalDateTime.now());
 
         Booking savedBooking = bookingRepository.save(booking);
-        return modelMapper.map(savedBooking , BookingResponse.class);
+        return mapToResponse(savedBooking);
     }
 
     // get Users Bookings
@@ -71,9 +89,26 @@ public class BookingService {
 
         List<Booking> bookings = bookingRepository.findByUser(user);
         return bookings.stream()
-                .map(b -> modelMapper.map(b , BookingResponse.class))
+                .map(this::mapToResponse)
                 .toList();
 
     }
 
+    private BookingResponse mapToResponse(Booking booking){
+        BookingResponse bookingResponse = new BookingResponse();
+        bookingResponse.setId(booking.getId());
+        bookingResponse.setEventId(booking.getEvent().getId());
+        bookingResponse.setSeatsBooked(booking.getSeatsBooked());
+        bookingResponse.setBookingTime(booking.getBookingTime());
+        return bookingResponse;
+    }
+
 }
+/*
+Part	Role
+@Version	                     enables concurrency control
+OptimisticLockException	         detects conflict
+Retry loop	                     handles conflict
+
+“I implemented concurrency using optimistic locking with a version field and handled conflicts using retry logic.”
+ */

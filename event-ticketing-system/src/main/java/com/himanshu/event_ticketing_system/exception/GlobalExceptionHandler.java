@@ -1,5 +1,6 @@
 package com.himanshu.event_ticketing_system.exception;
 
+import jakarta.persistence.OptimisticLockException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -35,6 +36,15 @@ public class GlobalExceptionHandler {
                 .build();
         ApiResponse<?> apiResponse = new ApiResponse<>(apiError);
         return new ResponseEntity<>(apiResponse , HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(OptimisticLockException.class)
+    public ResponseEntity<ApiResponse<?>> handleOptimisticLockException(OptimisticLockException optimisticLockException){
+        ApiError apiError = ApiError.builder()
+                .message("Seats just got booked by someone else. Please try again.")
+                .status(HttpStatus.CONFLICT)
+                .build();
+        return new ResponseEntity<>(new ApiResponse<>(apiError), HttpStatus.CONFLICT);
     }
 
 }

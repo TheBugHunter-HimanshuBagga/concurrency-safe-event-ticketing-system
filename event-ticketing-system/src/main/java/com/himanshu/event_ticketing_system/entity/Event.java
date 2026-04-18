@@ -34,6 +34,9 @@ public class Event {
 
     private int availableSeats;
 
+    @Version
+    private int version;
+
     @OneToMany(mappedBy = "event" , cascade = CascadeType.ALL) // Inverse Side
     @JsonIgnore // prevents infinte Loops in API response
     private List<Booking> bookings;
