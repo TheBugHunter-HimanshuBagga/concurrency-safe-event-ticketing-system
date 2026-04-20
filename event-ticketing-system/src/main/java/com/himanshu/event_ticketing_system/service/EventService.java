@@ -5,9 +5,13 @@ import com.himanshu.event_ticketing_system.dto.EventResponse;
 import com.himanshu.event_ticketing_system.entity.Event;
 import com.himanshu.event_ticketing_system.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,7 +52,7 @@ public class EventService {
                 () -> new RuntimeException("Event Not Found!")
         );
         event.setTitle(eventRequest.getTitle());
-        event.setDescription(event.getDescription());
+        event.setDescription(eventRequest.getDescription());
         event.setEventDateTime(eventRequest.getEventDateTime());
 
         int seatsDifference = eventRequest.getTotalSeats() - event.getAvailableSeats();
@@ -66,6 +70,17 @@ public class EventService {
         );
         eventRepository.delete(event);
     }
+
+    public Page<EventResponse> searchEvents(String keyword , LocalDateTime dateTime , int page , int size){
+        Pageable pageable = PageRequest.of(page , size);
+        Page<Event> events = eventRepository.findByTitleContainingIgnoreCaseAndEventDateTimeAfter(
+                keyword,
+                dateTime,
+                pageable
+        );
+        return events.map(event -> modelMapper.map(event , EventResponse.class));
+    }
+
 }
 /*
 🤷‍♂️CREATE EVENT

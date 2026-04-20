@@ -7,9 +7,12 @@ import com.himanshu.event_ticketing_system.exception.ApiResponse;
 import com.himanshu.event_ticketing_system.service.EventService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -51,5 +54,15 @@ public class EventController {
         eventService.deleteEvent(id);
         ApiResponse<String> apiResponse = new ApiResponse<>("Event Deleted Successfully");
         return ResponseEntity.ok(apiResponse);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<Page<EventResponse>>> searchEvents(@RequestParam String keyword,
+                                                                             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateTime,
+                                                                             @RequestParam(defaultValue = "0") int page,
+                                                                             @RequestParam(defaultValue = "5") int size){
+            Page<EventResponse> eventResponses = eventService.searchEvents(keyword , dateTime , page , size);
+            ApiResponse<Page<EventResponse>> apiResponse = new ApiResponse<>(eventResponses);
+            return ResponseEntity.ok(apiResponse);
     }
 }
