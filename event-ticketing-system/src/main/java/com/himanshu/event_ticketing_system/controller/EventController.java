@@ -57,8 +57,12 @@ public class EventController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<ApiResponse<Page<EventResponse>>> searchEvents(@RequestParam String keyword,
-                                                                             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateTime,
+    public ResponseEntity<ApiResponse<Page<EventResponse>>> searchEvents(@RequestParam(required = false) String keyword,
+
+                                                                             @RequestParam(required = false)
+                                                                             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                                                                             LocalDateTime dateTime,
+
                                                                              @RequestParam(defaultValue = "0") int page,
                                                                              @RequestParam(defaultValue = "5") int size){
             Page<EventResponse> eventResponses = eventService.searchEvents(keyword , dateTime , page , size);

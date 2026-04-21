@@ -72,6 +72,10 @@ public class EventService {
     }
 
     public Page<EventResponse> searchEvents(String keyword , LocalDateTime dateTime , int page , int size){
+
+        if(keyword == null) keyword = "";
+        if(dateTime == null) dateTime = LocalDateTime.now();
+
         Pageable pageable = PageRequest.of(page , size);
         Page<Event> events = eventRepository.findByTitleContainingIgnoreCaseAndEventDateTimeAfter(
                 keyword,

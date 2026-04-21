@@ -37,4 +37,11 @@ public class BookingController {
         return ResponseEntity.ok(apiResponse);
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<String>> cancelBooking(@PathVariable Long id){
+        bookingService.cancelBooking(id);
+        ApiResponse<String> apiResponse = new ApiResponse<>("Booking Deleted Successfully");
+        return ResponseEntity.ok(apiResponse);
+    }
+
 }

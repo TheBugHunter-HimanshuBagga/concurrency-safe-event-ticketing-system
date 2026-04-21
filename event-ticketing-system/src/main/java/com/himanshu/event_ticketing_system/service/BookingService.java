@@ -103,6 +103,23 @@ public class BookingService {
         return bookingResponse;
     }
 
+    @Transactional
+    public void cancelBooking(Long bookingId){
+        // get logged-in user
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email).orElseThrow(
+                () -> new RuntimeException("User Doesn't exists")
+        );
+        // get the user booking
+        Booking booking = bookingRepository.findByIdAndUser(bookingId , user).orElseThrow(
+                () -> new RuntimeException("Booking Not Found!")
+        );
+        //
+        Event event = booking.getEvent();
+
+        event.setAvailableSeats(event.getAvailableSeats() + booking.getSeatsBooked());
+        bookingRepository.delete(booking);
+    }
 }
 /*
 Part	Role
