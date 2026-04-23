@@ -32,20 +32,35 @@ public class SecurityConfig {
         httpSecurity
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+
+                        // permit all
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/events/**").permitAll()
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
                         // ADMIN only
+
                         .requestMatchers(HttpMethod.POST,"/events/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/events/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE,"/events/**").hasRole("ADMIN")
-                        // USER + ADMIN
-                        .requestMatchers(HttpMethod.GET,"/events/**").authenticated()
+
                         // bookings → any logged-in user
-                        .requestMatchers("/bookings/**").authenticated()
+
+                        .requestMatchers("/bookings/**").hasRole("USER")
                         // fallback
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session ->
                     session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(((request, response, authException) ->
+                                response.sendError(HttpStatus.UNAUTHORIZED.value(),"unauthorized")))
+                        .accessDeniedHandler((request, response, accessDeniedException) ->
+                                response.sendError(HttpStatus.FORBIDDEN.value(), "Forbidden"))
                 );
         httpSecurity.addFilterBefore(jwtAuthenticationFilter , UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build(); //  Converts config → actual working filter chain
