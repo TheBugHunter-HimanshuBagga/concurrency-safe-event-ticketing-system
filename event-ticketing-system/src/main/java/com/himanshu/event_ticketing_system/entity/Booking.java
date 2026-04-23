@@ -1,5 +1,6 @@
 package com.himanshu.event_ticketing_system.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -37,4 +38,11 @@ public class Booking {
     @Column(nullable = false)
     private LocalDateTime bookingTime;
 
+    @OneToOne(mappedBy = "booking")
+    @JsonIgnore
+    private Payment payment;
+
 }
+/*
+bidirectional mapping lets you easily access payment from booking, making service logic cleaner and more intuitive.
+ */
