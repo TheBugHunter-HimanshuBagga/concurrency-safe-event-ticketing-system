@@ -1,6 +1,7 @@
 package com.himanshu.event_ticketing_system.service;
 
 import com.himanshu.event_ticketing_system.config.RazorpayConfig;
+import com.himanshu.event_ticketing_system.dto.PaymentVerifyRequest;
 import com.himanshu.event_ticketing_system.entity.Booking;
 import com.himanshu.event_ticketing_system.entity.Payment;
 import com.himanshu.event_ticketing_system.entity.enums.PaymentStatus;
@@ -8,6 +9,7 @@ import com.himanshu.event_ticketing_system.repository.BookingRepository;
 import com.himanshu.event_ticketing_system.repository.PaymentRepository;
 import com.razorpay.Order;
 import com.razorpay.RazorpayClient;
+import com.razorpay.RazorpayException;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +19,8 @@ import java.awt.print.Book;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.razorpay.Utils.verifySignature;
 
 @Service
 @RequiredArgsConstructor
@@ -60,6 +64,34 @@ public class PaymentService {
         return response;
     }
 
+    public String verifyPayment(PaymentVerifyRequest request) throws RazorpayException {
+        Payment payment = paymentRepository.findByRazorPayOrderId(request.getRazorpayOrderId())
+                .orElseThrow(
+                        () -> new RuntimeException("Payment Not Found")
+                );
+        if(payment.getStatus() == PaymentStatus.SUCCESS){
+            return "Already Verified";
+        }
+
+        boolean isValid = verifySignature(
+                request.getRazorpayOrderId(),
+                request.getRazorpayPaymentId(),
+                request.getRazorpaySignature()
+        );
+
+        if(!isValid){
+            payment.setStatus(PaymentStatus.FAILED);
+            paymentRepository.save(payment);
+            throw new RuntimeException("Invalid Payment Signature");
+        }
+
+        payment.setRazorPayPaymentId(request.getRazorpayPaymentId());
+        payment.setStatus(PaymentStatus.SUCCESS);
+        paymentRepository.save(payment);
+
+        return "Payment verified successfully";
+    }
+
 }
 /*
 TO BE DONE
@@ -77,4 +109,14 @@ TO BE DONE
 5. Backend → sends orderId to frontend
 6. Frontend → opens Razorpay UI
 7. User pays (next step)
+
+
+1. Booking created
+2. Order created (CREATED)
+3. User pays
+4. Frontend sends data
+5. verifyPayment() runs
+    ↓
+    if fake → FAILED
+    if real → SUCCESS
  */
